@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/mattermost/mattermost-server/model"
@@ -28,13 +30,14 @@ func (p *Plugin) OnActivate() error {
 		DisplayName:      "Lennyface",
 		Description:      lennyface,
 		AutoComplete:     true,
-		AutoCompleteDesc: lennyface,
+		AutoCompleteDesc: fmt.Sprintf("/lennyface text will appear as \"text %s\"", lennyface),
+		AutoCompleteHint: "[text]",
 	})
 }
 
 func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
 	return &model.CommandResponse{
 		ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL,
-		Text:         lennyface,
+		Text:         fmt.Sprintf("%s %s", strings.TrimPrefix(args.Command, "/lennyface "), lennyface),
 	}, nil
 }
