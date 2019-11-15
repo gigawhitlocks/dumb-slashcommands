@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"sync"
 
+	"github.com/mattermost/mattermost-server/model"
 	"github.com/mattermost/mattermost-server/plugin"
 )
+
+const lennyface = "( ͡° ͜ʖ ͡°)"
 
 // Plugin implements the interface expected by the Mattermost server to communicate between the server and plugin processes.
 type Plugin struct {
@@ -20,9 +21,20 @@ type Plugin struct {
 	configuration *configuration
 }
 
-// ServeHTTP demonstrates a plugin that handles HTTP requests by greeting the world.
-func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, world!")
+func (p *Plugin) OnActivate() error {
+	// args.Command contains the full command string entered but for now we only do one thing
+	return p.API.RegisterCommand(&model.Command{
+		Trigger:          "lennyface",
+		DisplayName:      "Lennyface",
+		Description:      lennyface,
+		AutoComplete:     true,
+		AutoCompleteDesc: lennyface,
+	})
 }
 
-// See https://developers.mattermost.com/extend/plugins/server/reference/
+func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
+	return &model.CommandResponse{
+		ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL,
+		Text:         lennyface,
+	}, nil
+}
