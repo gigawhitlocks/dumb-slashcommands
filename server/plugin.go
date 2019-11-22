@@ -6,13 +6,12 @@ import (
 	"sync"
 
 	"encoding/json"
-	"fmt"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/plugin"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
+
+	"github.com/mattermost/mattermost-server/model"
+	"github.com/mattermost/mattermost-server/plugin"
 )
 
 const lennyface = "( ͡° ͜ʖ ͡°)"
@@ -53,7 +52,7 @@ func (p *Plugin) OnActivate() error {
 
 func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
 	if strings.HasPrefix(args.Command, "/lennyface") {
-		return Lennyface()
+		return Lennyface(args)
 	}
 
 	if strings.HasPrefix(args.Command, "/define") {
@@ -64,7 +63,7 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 
 }
 
-func Lennyface() (*model.CommandResponse, *model.AppError) {
+func Lennyface(args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
 	return &model.CommandResponse{
 		ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL,
 		Text:         fmt.Sprintf("%s %s", strings.TrimPrefix(args.Command, "/lennyface "), lennyface),
@@ -98,6 +97,13 @@ func UrbanDictionary(in string) (*model.CommandResponse, *model.AppError) {
 	err = json.Unmarshal(payload, &result)
 	if err != nil {
 		return nil, model.NewAppError("/define couldn't unmarshal the response JSON from Urban Dictionary", string(payload), nil, err.Error(), resp.StatusCode)
+	}
+
+	if len(result.List) == 0 {
+		return &model.CommandResponse{
+			ResponseType: model.COMMAND_RESPONSE_TYPE_EPHEMERAL,
+			Text:         fmt.Sprintf("Sorry! No results found for \"%s\"", trimmed),
+		}, nil
 	}
 
 	content := result.List[0]
