@@ -2,7 +2,7 @@
     "id": "business.silly.plugin",
     "name": "Nonsense Plugin",
     "description": "This plugin has / will have a bunch of silly business in it",
-    "version": "0.1.4.2",
+    "version": "0.2.1",
     "min_server_version": "5.12.0",
     "server": {
 	"executables": {
