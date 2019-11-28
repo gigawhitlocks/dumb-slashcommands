@@ -14,8 +14,6 @@ import (
 	"github.com/mattermost/mattermost-server/plugin"
 )
 
-const lennyface = "( ͡° ͜ʖ ͡°)"
-
 // Plugin implements the interface expected by the Mattermost server to communicate between the server and plugin processes.
 type Plugin struct {
 	plugin.MattermostPlugin
@@ -29,18 +27,7 @@ type Plugin struct {
 }
 
 func (p *Plugin) OnActivate() error {
-	// args.Command contains the full command string entered but for now we only do one thing
-	if err := p.API.RegisterCommand(&model.Command{
-		Trigger:          "lennyface",
-		DisplayName:      "Lennyface",
-		Description:      lennyface,
-		AutoComplete:     true,
-		AutoCompleteDesc: fmt.Sprintf("/lennyface text will appear as \"text %s\"", lennyface),
-		AutoCompleteHint: "[text]",
-	}); err != nil {
-		return err
-	}
-
+	// args.Command contains the full command string entered
 	return p.API.RegisterCommand(&model.Command{
 		Trigger:          "define",
 		DisplayName:      "Urban Dictionary",
@@ -51,23 +38,7 @@ func (p *Plugin) OnActivate() error {
 }
 
 func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
-	if strings.HasPrefix(args.Command, "/lennyface") {
-		return Lennyface(args)
-	}
-
-	if strings.HasPrefix(args.Command, "/define") {
-		return UrbanDictionary(args.Command)
-	}
-
-	return nil, nil
-
-}
-
-func Lennyface(args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
-	return &model.CommandResponse{
-		ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL,
-		Text:         fmt.Sprintf("%s %s", strings.TrimPrefix(args.Command, "/lennyface "), lennyface),
-	}, nil
+	return UrbanDictionary(args.Command)
 }
 
 type UrbanDictionaryResult struct {
