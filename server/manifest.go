@@ -6,6 +6,6 @@ var manifest = struct {
 	ID      string
 	Version string
 }{
-	ID:      "business.silly.plugin",
-	Version: "0.2.2",
+	ID:      "business.silly.urbandictionary",
+	Version: "0.2.3",
 }
